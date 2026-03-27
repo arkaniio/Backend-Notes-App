@@ -46,3 +46,20 @@ def toggle_like(note_id, user_id):
         except Exception as e:
             db.session.rollback()
             return None, "Add like was not successed!"
+
+def get_like_by_user_id(user_id, note_id):
+    
+    #base query for find the user
+    user = User.query.get(user_id)
+
+    #validate if the user is not exist
+    if not user:
+        return None, "Failed to find the id!"
+    
+    #base query for find the like by user id
+    likes = Like.query.filter((Like.note_id == note_id) & (Like.user_id == user.id)).all()
+    
+    if not likes:
+        return None, "Failed to find the like!"
+    
+    return [like.to_Json(include_user=True, include_note=True) for like in likes], "Get like has been successfully!"
